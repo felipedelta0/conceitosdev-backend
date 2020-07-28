@@ -7,6 +7,20 @@ app.use(express.json())
 
 const projects = []
 
+function logRequest (request, response, next) {
+	const { method, url } = request
+
+	const logLabel = `[${method.toUpperCase()}] ${url}`
+
+	console.time(logLabel)
+
+	next()
+
+	console.timeEnd(logLabel)
+}
+
+app.use(logRequest)
+
 app.get('/projects', (request, response) => {
 	const { title } = request.query
 
@@ -16,7 +30,6 @@ app.get('/projects', (request, response) => {
 
   return response.json(result)
 })
-
 
 app.post('/projects', (request, response) => {
 	const { title, owner } = request.body
