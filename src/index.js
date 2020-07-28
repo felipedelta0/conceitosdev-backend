@@ -1,5 +1,5 @@
 const express = require('express')
-const { uuid } = require('uuidv4')
+const { uuid, isUuid } = require('uuidv4')
 
 const app = express()
 
@@ -19,7 +19,17 @@ function logRequest (request, response, next) {
 	console.timeEnd(logLabel)
 }
 
+function validateRequestID (request, response, next) {
+	const { id } = request.params
+
+	if (!isUuid(id))
+		return response.status(400).json({ error: "Project ID not found" })
+	
+	return next()
+}
+
 app.use(logRequest)
+app.use('/projects/:id', validateRequestID)
 
 app.get('/projects', (request, response) => {
 	const { title } = request.query
